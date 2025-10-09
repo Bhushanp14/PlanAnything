@@ -30,12 +30,25 @@
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-2xl font-semibold text-gray-900">{{ month_name }} {{ year }}</h2>
             <div class="flex gap-2">
-                <a href="?year={{ year }}&month={% if month == 1 %}12{% else %}{{ month|add:'-1' }}{% endif %}{% if month == 1 %}&year={{ year|add:'-1' }}{% endif %}" class="px-3 py-1 border border-gray-300 rounded-lg hover:bg-gray-50">
-                    Previous
-                </a>
-                <a href="?year={{ year }}&month={% if month == 12 %}1{% else %}{{ month|add:'1' }}{% endif %}{% if month == 12 %}&year={{ year|add:'1' }}{% endif %}" class="px-3 py-1 border border-gray-300 rounded-lg hover:bg-gray-50">
-                    Next
-                </a>
+                {% if month == 1 %}
+                    <a href="?year={{ year|add:'-1' }}&month=12" class="px-3 py-1 border border-gray-300 rounded-lg hover:bg-gray-50">
+                        Previous
+                    </a>
+                {% else %}
+                    <a href="?year={{ year }}&month={{ month|add:'-1' }}" class="px-3 py-1 border border-gray-300 rounded-lg hover:bg-gray-50">
+                        Previous
+                    </a>
+                {% endif %}
+                
+                {% if month == 12 %}
+                    <a href="?year={{ year|add:'1' }}&month=1" class="px-3 py-1 border border-gray-300 rounded-lg hover:bg-gray-50">
+                        Next
+                    </a>
+                {% else %}
+                    <a href="?year={{ year }}&month={{ month|add:'1' }}" class="px-3 py-1 border border-gray-300 rounded-lg hover:bg-gray-50">
+                        Next
+                    </a>
+                {% endif %}
             </div>
         </div>
 

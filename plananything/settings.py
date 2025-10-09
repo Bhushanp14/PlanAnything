@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
+import sys
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +22,31 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-dj*)83*o(0k$w))%js$l=l++2ry^&3pj3b4mz)7f_z_+r8q&rq'
+SECRET_KEY = os.environ.get('SESSION_SECRET', 'django-insecure-development-key-only')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = ['*']
+# Production security checks
+if not DEBUG:
+    # Require SECRET_KEY in production
+    if not os.environ.get('SESSION_SECRET') or SECRET_KEY == 'django-insecure-development-key-only':
+        print("ERROR: SESSION_SECRET environment variable must be set when DEBUG is False!")
+        print("Set SESSION_SECRET in Replit Secrets for production deployment.")
+        sys.exit(1)
+    
+    # Require ALLOWED_HOSTS in production
+    allowed_hosts = os.environ.get('ALLOWED_HOSTS')
+    if not allowed_hosts:
+        print("ERROR: ALLOWED_HOSTS must be set when DEBUG is False!")
+        print("Set ALLOWED_HOSTS environment variable to your domain(s).")
+        sys.exit(1)
+    ALLOWED_HOSTS = allowed_hosts.split(',')
+else:
+    ALLOWED_HOSTS = ['*']
+    # Warn if running in production mode during development
+    if os.environ.get('REPL_DEPLOYMENT') == '1':
+        print("WARNING: Running with DEBUG=True in a deployed environment!")
 
 
 # Application definition

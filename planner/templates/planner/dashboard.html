@@ -73,15 +73,22 @@
                                 {% if stats.total == 0 %}
                                     <p class="text-sm text-gray-500">No tasks added yet</p>
                                 {% else %}
+                                    {% with percentage=stats.completed|floatformat:0 %}
+                                    {% if stats.total > 0 %}
+                                        {% widthratio stats.completed stats.total 100 as percent %}
+                                    {% else %}
+                                        {% widthratio 0 1 100 as percent %}
+                                    {% endif %}
                                     <div class="flex items-center justify-between text-sm">
                                         <span class="text-gray-600">{{ stats.completed }}/{{ stats.total }} Completed</span>
                                         <span class="font-medium" style="color: {{ plan.color }};">
-                                            {{ stats.completed|floatformat:0 }}%
+                                            {{ percent }}%
                                         </span>
                                     </div>
                                     <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
-                                        <div class="h-2 rounded-full" style="background-color: {{ plan.color }}; width: {% if stats.total > 0 %}{{ stats.completed|floatformat:0 }}{% else %}0{% endif %}%"></div>
+                                        <div class="h-2 rounded-full" style="background-color: {{ plan.color }}; width: {{ percent }}%"></div>
                                     </div>
+                                    {% endwith %}
                                 {% endif %}
                             </div>
                         {% endwith %}
