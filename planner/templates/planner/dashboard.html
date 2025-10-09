@@ -1,0 +1,98 @@
+{% extends 'planner/base.html' %}
+
+{% block title %}Dashboard - PlanAnything{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    {% if not has_plans %}
+        <div class="flex flex-col lg:flex-row items-center justify-between bg-white rounded-lg shadow-lg p-8 lg:p-12">
+            <div class="lg:w-1/2 mb-8 lg:mb-0">
+                <h1 class="text-4xl font-bold text-gray-900 mb-4">
+                    Every plan deserves its own calendar.
+                </h1>
+                <p class="text-xl text-gray-600 mb-6">
+                    Create your first plan to get started!
+                </p>
+                <a href="{% url 'plan_create' %}" class="inline-block bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 text-lg font-medium">
+                    Create Plan
+                </a>
+            </div>
+            <div class="lg:w-1/2 lg:pl-12">
+                <div class="bg-gray-100 rounded-lg p-6">
+                    <div class="bg-white rounded-lg shadow-md p-4">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-semibold">Sample Calendar</h3>
+                            <div class="text-sm text-gray-600">January 2025</div>
+                        </div>
+                        <div class="grid grid-cols-7 gap-2 text-center">
+                            <div class="text-xs font-semibold text-gray-600">Sun</div>
+                            <div class="text-xs font-semibold text-gray-600">Mon</div>
+                            <div class="text-xs font-semibold text-gray-600">Tue</div>
+                            <div class="text-xs font-semibold text-gray-600">Wed</div>
+                            <div class="text-xs font-semibold text-gray-600">Thu</div>
+                            <div class="text-xs font-semibold text-gray-600">Fri</div>
+                            <div class="text-xs font-semibold text-gray-600">Sat</div>
+                            
+                            <div class="p-2 text-gray-400"></div>
+                            <div class="p-2 text-gray-400"></div>
+                            <div class="p-2 text-gray-400"></div>
+                            <div class="p-2 bg-blue-50 rounded">1</div>
+                            <div class="p-2 bg-blue-50 rounded">2</div>
+                            <div class="p-2 bg-green-50 rounded">3</div>
+                            <div class="p-2">4</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="mb-6 flex justify-between items-center">
+            <h1 class="text-3xl font-bold text-gray-900">My Plans</h1>
+            <a href="{% url 'plan_create' %}" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 font-medium">
+                + Create New Plan
+            </a>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for plan in plans %}
+                <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                    <div class="h-2" style="background-color: {{ plan.color }};"></div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">{{ plan.title }}</h3>
+                        <p class="text-gray-600 text-sm mb-4">{{ plan.description|truncatewords:15 }}</p>
+                        
+                        <div class="flex items-center justify-between text-sm text-gray-500 mb-4">
+                            <span>{{ plan.start_date }}</span>
+                            {% if plan.end_date %}
+                                <span>to {{ plan.end_date }}</span>
+                            {% endif %}
+                        </div>
+
+                        {% with stats=plan.get_task_stats %}
+                            <div class="mb-4">
+                                {% if stats.total == 0 %}
+                                    <p class="text-sm text-gray-500">No tasks added yet</p>
+                                {% else %}
+                                    <div class="flex items-center justify-between text-sm">
+                                        <span class="text-gray-600">{{ stats.completed }}/{{ stats.total }} Completed</span>
+                                        <span class="font-medium" style="color: {{ plan.color }};">
+                                            {{ stats.completed|floatformat:0 }}%
+                                        </span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+                                        <div class="h-2 rounded-full" style="background-color: {{ plan.color }}; width: {% if stats.total > 0 %}{{ stats.completed|floatformat:0 }}{% else %}0{% endif %}%"></div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endwith %}
+
+                        <a href="{% url 'plan_detail' plan.id %}" class="block w-full text-center bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 font-medium">
+                            View Plan
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

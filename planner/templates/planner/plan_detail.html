@@ -1,0 +1,156 @@
+{% extends 'planner/base.html' %}
+{% load planner_tags %}
+
+{% block title %}{{ plan.title }} - PlanAnything{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+            <div class="flex items-center gap-3 mb-2">
+                <div class="w-4 h-4 rounded-full" style="background-color: {{ plan.color }};"></div>
+                <h1 class="text-3xl font-bold text-gray-900">{{ plan.title }}</h1>
+            </div>
+            <p class="text-gray-600">{{ plan.description }}</p>
+        </div>
+        <div class="flex gap-2">
+            <a href="{% url 'plan_edit' plan.id %}" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+                Edit Plan
+            </a>
+            <a href="{% url 'plan_delete' plan.id %}" class="px-4 py-2 border border-red-300 text-red-600 rounded-lg hover:bg-red-50">
+                Delete Plan
+            </a>
+            <a href="{% url 'dashboard' %}" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">
+                Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-semibold text-gray-900">{{ month_name }} {{ year }}</h2>
+            <div class="flex gap-2">
+                <a href="?year={{ year }}&month={% if month == 1 %}12{% else %}{{ month|add:'-1' }}{% endif %}{% if month == 1 %}&year={{ year|add:'-1' }}{% endif %}" class="px-3 py-1 border border-gray-300 rounded-lg hover:bg-gray-50">
+                    Previous
+                </a>
+                <a href="?year={{ year }}&month={% if month == 12 %}1{% else %}{{ month|add:'1' }}{% endif %}{% if month == 12 %}&year={{ year|add:'1' }}{% endif %}" class="px-3 py-1 border border-gray-300 rounded-lg hover:bg-gray-50">
+                    Next
+                </a>
+            </div>
+        </div>
+
+        <p class="text-sm text-gray-500 mb-4">Click on any date to add a task</p>
+
+        <div class="border border-gray-200 rounded-lg overflow-hidden">
+            <div class="grid grid-cols-7 bg-gray-50 border-b border-gray-200">
+                <div class="p-3 text-center text-sm font-semibold text-gray-700">Sun</div>
+                <div class="p-3 text-center text-sm font-semibold text-gray-700">Mon</div>
+                <div class="p-3 text-center text-sm font-semibold text-gray-700">Tue</div>
+                <div class="p-3 text-center text-sm font-semibold text-gray-700">Wed</div>
+                <div class="p-3 text-center text-sm font-semibold text-gray-700">Thu</div>
+                <div class="p-3 text-center text-sm font-semibold text-gray-700">Fri</div>
+                <div class="p-3 text-center text-sm font-semibold text-gray-700">Sat</div>
+            </div>
+
+            {% for week in calendar %}
+                <div class="grid grid-cols-7 border-b border-gray-200 last:border-b-0">
+                    {% for day in week %}
+                        <div class="min-h-24 p-2 border-r border-gray-200 last:border-r-0 hover:bg-gray-50 transition-colors relative
+                            {% if day == 0 %}bg-gray-50{% endif %}
+                            {% if day != 0 %}
+                                {% with date_str=year|stringformat:'04d'|add:'-'|add:month|stringformat:'02d'|add:'-'|add:day|stringformat:'02d' %}
+                                    {% if date_str == today|date:'Y-m-d' %}bg-blue-50{% endif %}
+                                {% endwith %}
+                            {% endif %}
+                        ">
+                            {% if day != 0 %}
+                                {% with date_str=year|stringformat:'04d'|add:'-'|add:month|stringformat:'02d'|add:'-'|add:day|stringformat:'02d' %}
+                                    <div class="flex justify-between items-start mb-1">
+                                        <span class="text-sm font-medium text-gray-700">{{ day }}</span>
+                                        <button onclick="openTaskDialog('{{ date_str }}', null)" class="text-blue-600 hover:text-blue-800 text-lg leading-none">+</button>
+                                    </div>
+                                    
+                                    {% if date_str in tasks_by_date %}
+                                        <div class="space-y-1">
+                                            {% for task in tasks_by_date|get_item:date_str %}
+                                                <div onclick="openTaskDialog('{{ date_str }}', {{ task.id }})" 
+                                                     class="text-xs p-1 rounded cursor-pointer
+                                                        {% if task.status == 'completed' %}bg-green-100 text-green-800 border border-green-300{% elif task.is_overdue %}bg-red-100 text-red-800 border border-red-300{% else %}bg-blue-100 text-blue-800 border border-blue-300{% endif %}
+                                                     ">
+                                                    {{ task.title|truncatewords:3 }}
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                {% endwith %}
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="mt-4 flex items-center gap-6 text-sm">
+            <div class="flex items-center gap-2">
+                <div class="w-4 h-4 bg-green-100 border border-green-300 rounded"></div>
+                <span class="text-gray-600">Completed</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <div class="w-4 h-4 bg-red-100 border border-red-300 rounded"></div>
+                <span class="text-gray-600">Overdue</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <div class="w-4 h-4 bg-blue-100 border border-blue-300 rounded"></div>
+                <span class="text-gray-600">Pending</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="taskDialog" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-lg p-8 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+        <div id="taskDialogContent"></div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function openTaskDialog(date, taskId) {
+    const dialog = document.getElementById('taskDialog');
+    const content = document.getElementById('taskDialogContent');
+    
+    if (taskId) {
+        fetch(`/task/${taskId}/edit/`)
+            .then(response => response.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const formContent = doc.querySelector('.bg-white').innerHTML;
+                content.innerHTML = formContent;
+                dialog.classList.remove('hidden');
+                dialog.classList.add('flex');
+            });
+    } else {
+        window.location.href = `/plan/{{ plan.id }}/task/create/?date=${date}`;
+    }
+}
+
+function closeTaskDialog() {
+    const dialog = document.getElementById('taskDialog');
+    dialog.classList.add('hidden');
+    dialog.classList.remove('flex');
+}
+
+document.getElementById('taskDialog').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeTaskDialog();
+    }
+});
+</script>
+
+<style>
+{% templatetag openvariable %} templatetag closevariable %}
+</style>
+{% endblock %}
