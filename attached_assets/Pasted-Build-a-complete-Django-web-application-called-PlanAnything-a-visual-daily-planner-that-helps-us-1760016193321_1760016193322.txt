@@ -1,0 +1,66 @@
+Build a complete Django web application called “PlanAnything” - a visual daily planner that helps users plan and track their tasks on separate calendar.
+
+### 📌 Project Overview
+PlanAnything is a productivity web app where users can:
+- Create multiple “Plans” (e.g., Work Plan, Fitness Plan, Study Plan)
+- Each Plan will have its own calendar.
+- Create Plan form will be done on a pop-up dialog box.
+- Add daily tasks under each plan with description, optional photo, and completion status
+- View all tasks on a **calendar view**
+- Find Task details on a pop-up dialog box.
+- Track completion visually (color-coded based on task status)
+- Edit or delete tasks and plans anytime.
+
+### 🧩 Tech Stack
+- **Backend:** Django (Python)
+- **Frontend:** HTML, CSS, JavaScript (no frontend framework)
+- **Database:** SQLite (default)
+- **Styling:** TailwindCSS or plain CSS (keep clean and minimal)
+- **Calendar:** Use JS to display monthly/weekly view dynamically
+
+### 🔐 Core Features
+1. **User Authentication**
+   - Login / Register / Logout pages
+   - Each user has their own plans and tasks
+
+2. **Plans**
+   - Create, update, and delete plans
+   - Each Plan has a name and color tag
+   - Show all plans on dashboard
+
+3. **Tasks**
+   - Add task with:
+     - Title
+     - Description
+     - Photo (optional, upload and display)
+     - Status (Pending / Completed)
+   - Display tasks on a **calendar view** (color-coded)
+   - Mark task as complete or delete
+## Page and User Flow ##
+**Dashboard Page**
+   - If  no plans created: Then show a landing page with a tagline
+ “Every plan deserves its own calendar.
+   Create your first plan to get started!”  ,  with the action button “Create Plan” on the left and a sample screenshot of the calendar on the right
+   - Once plans exist, show all plans as cards with a “View Plan” button. Also a “Create New Plan” action button on top of the list.
+- On nav bar for un-authorised users, have a app name on left side, then on right side have About, Login and Signup  buttons
+- Show a task completed count on the Plan Card for eg. 2/10 Completed, or no Task added yet
+ 
+**Plan Create Page**
+-	Create Plan Dialog Box will open once the user clicks on Create Plan/+ button.
+-	Will consist the following form fields, Plan Title,Description, Start Date, End Date(not Mandatory).
+-	Submit button will take to Plan Detail Page
+**Plan Detail Page**
+   - Add/Edit/Delete tasks from here
+  - Task’s Title should be displayed in a text  box, on the respective date cell.
+ - Upon click on the date or task name, Task Detail dialog box should open eighter to create, edit or delete the task.
+
+   - Calendar should visually mark completed tasks in green and Overdue ones in red, rest in default color.
+
+
+
+### 🎨 UI Design Notes
+- Keep consistent padding and rounded corners (modern app feel)
+- Header with logo “PlanAnything” and navigation (Dashboard | Profile | Logout)
+- Use a clean font (e.g., Inter or Poppins)
+- Calendar cells should highlight today’s date and display tasks as colored dots
+- Add a Click on any date to Add Task helper text on View Plan details page.
