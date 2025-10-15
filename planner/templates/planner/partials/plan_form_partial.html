@@ -1,0 +1,64 @@
+
+
+
+<h2 class="text-2xl font-bold text-gray-900 mb-6">
+            {% if is_edit %}Edit Plan{% else %}Create New Plan{% endif %}
+        </h2>
+        
+        <form method="POST" 
+      hx-post="{% url 'plan_create' %}" 
+      hx-target="#modal-content" 
+      hx-swap="innerHTML">
+            {% csrf_token %}
+            
+            <div>
+                <label for="{{ form.title.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Plan Title *</label>
+                {{ form.title }}
+                {% if form.title.errors %}
+                    <p class="mt-1 text-sm text-red-600">{{ form.title.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <div>
+                <label for="{{ form.description.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                {{ form.description }}
+                {% if form.description.errors %}
+                    <p class="mt-1 text-sm text-red-600">{{ form.description.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <div>
+                <label for="{{ form.color.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Color Tag</label>
+                {{ form.color }}
+                {% if form.color.errors %}
+                    <p class="mt-1 text-sm text-red-600">{{ form.color.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label for="{{ form.start_date.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Start Date *</label>
+                    {{ form.start_date }}
+                    {% if form.start_date.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.start_date.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label for="{{ form.end_date.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">End Date (Optional)</label>
+                    {{ form.end_date }}
+                    {% if form.end_date.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.end_date.errors.0 }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="flex justify-end space-x-4 pt-4">
+                <a href="{% if is_edit %}{% url 'plan_detail' plan.id %}{% else %}{% url 'dashboard' %}{% endif %}" class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+                    Cancel
+                </a>
+                <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">
+                    {% if is_edit %}Update Plan{% else %}Create Plan{% endif %}
+                </button>
+            </div>
+        </form>

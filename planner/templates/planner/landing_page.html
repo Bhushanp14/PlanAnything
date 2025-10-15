@@ -1,0 +1,132 @@
+{% extends 'planner/base.html' %}
+
+{% block title %}HomePage - PlanAnything{% endblock %}
+
+{% block content %}
+<section class="w-full bg-transparent backdrop-blur-sm  px-12 py-20">
+  <div class="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-12 max-w-7xl mx-auto">
+    
+    <!-- Left Text -->
+    <div class="flex-1 max-w-2xl space-y-6">
+      <h1 class="text-7xl font-extrabold leading-tight text-gray-900">
+        Every plan deserves its own calendar.
+      </h1>
+      <p class="text-xl text-gray-700">
+        Create your first plan to get started!
+      </p>
+
+      <button hx-get="{% url 'plan_create' %}" 
+              hx-target="#modal-content" 
+              hx-trigger="click"
+              hx-swap="innerHTML"
+              class="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700">
+        + Create Plan
+      </button>
+    </div>
+
+    <!-- Right Calendar Preview -->
+    <div class="aspect-square w-full max-w-md lg:max-w-lg bg-white p-6 rounded-2xl shadow-md  mt-8 lg:mt-0 lg:mr-12">
+      <div class="flex justify-between items-center mb-4">
+        <button class="text-gray-500">&lt;</button>
+        <h2 class="font-semibold text-gray-700">May 2024</h2>
+        <button class="text-gray-500">&gt;</button>
+      </div>
+
+      <table class="w-full table-fixed text-center">
+  <thead>
+    <tr class="text-gray-500 text-sm">
+      <th class="w-1/7">Sun</th>
+      <th class="w-1/7">Mon</th>
+      <th class="w-1/7">Tue</th>
+      <th class="w-1/7">Wed</th>
+      <th class="w-1/7">Thu</th>
+      <th class="w-1/7">Fri</th>
+      <th class="w-1/7">Sat</th>
+    </tr>
+  </thead>
+  <tbody class="text-gray-700">
+    <tr>
+      <td class="h-20 overflow-hidden"> </td>
+      <td class="h-20 overflow-hidden">1</td>
+      <td class="h-20 overflow-hidden">2</td>
+      <td class="h-20 overflow-hidden">3</td>
+      <td class="h-20 overflow-hidden">4</td>
+      <td class="h-20 overflow-hidden">5</td>
+      <td class="h-20 overflow-hidden">6</td>
+    </tr>
+    <tr>
+      <td class="h-20 overflow-hidden">7</td>
+      <td class="h-20 overflow-hidden">8</td>
+      <td class="h-20 overflow-hidden bg-green-100 rounded-md">9<br><span class="text-xs text-green-700 truncate block">Task Day 1</span></td>
+      <td class="h-20 overflow-hidden bg-green-100 rounded-md">10<br><span class="text-xs text-green-700 truncate block">Task Day 2</span></td>
+      <td class="h-20 overflow-hidden bg-red-100 rounded-md">11<br><span class="text-xs text-red-700 truncate block">Task Day 3</span></td>
+      <td class="h-20 overflow-hidden bg-green-100 rounded-md">12<br><span class="text-xs text-green-700 truncate block">Task Day 4</span></td>
+      <td class="h-20 overflow-hidden bg-blue-100 rounded-md">13<br><span class="text-xs text-blue-700 truncate block">Task Day 5</span></td>
+    </tr>
+    <tr>
+      <td class="h-20 overflow-hidden bg-gray-100 rounded-md">12<br><span class="text-xs text-700 truncate block">Task Day 6</span></td>
+      <td class="h-20 overflow-hidden bg-gray-100 rounded-md">13<br><span class="text-xs text-700 truncate block">Task Day 7</span></td>
+      <td class="h-20 overflow-hidden">16</td>
+      <td class="h-20 overflow-hidden">17</td>
+      <td class="h-20 overflow-hidden">18</td>
+      <td class="h-20 overflow-hidden">19</td>
+      <td class="h-20 overflow-hidden">20</td>
+    </tr>
+    <tr>
+      <td class="h-20 overflow-hidden">21</td>
+      <td class="h-20 overflow-hidden">22</td>
+      <td class="h-20 overflow-hidden">23</td>
+      <td class="h-20 overflow-hidden">24</td>
+      <td class="h-20 overflow-hidden">25</td>
+      <td class="h-20 overflow-hidden">26</td>
+      <td class="h-20 overflow-hidden">27</td>
+    </tr>
+    <tr>
+      <td class="h-20 overflow-hidden">28</td>
+      <td class="h-20 overflow-hidden">29</td>
+      <td class="h-20 overflow-hidden">30</td>
+      <td class="h-20 overflow-hidden">31</td>
+      <td class="h-20 overflow-hidden">1</td>
+      <td class="h-20 overflow-hidden">2</td>
+      <td class="h-20 overflow-hidden">3</td>
+    </tr>
+    <!-- Repeat similar structure for other rows -->
+  </tbody>
+</table>
+    </div>
+  </div>
+  <!-- Modal (initially hidden, form will load inside this div) -->
+  <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div id="modal-content" class="bg-white p-8 rounded-lg shadow-lg max-w-lg w-full relative">
+      <!-- Content from plan_create.html will be loaded here -->
+    </div>
+  </div>
+
+  <script>
+    // Simple modal show/hide behavior
+    document.body.addEventListener('htmx:afterSwap', (event) => {
+      if (event.target.id === "modal-content") {
+        document.getElementById('modal').classList.remove('hidden');
+        document.getElementById('modal').classList.add('flex');
+      }
+    });
+
+    document.addEventListener('click', (e) => {
+      if (e.target.id === 'modal') {
+        e.target.classList.add('hidden');
+        e.target.classList.remove('flex');
+      }
+    });
+
+    // Function to close modal and reload content
+    function closeModalAndReload() {
+        const modal = document.getElementById('modal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+
+        // Optional: reload page or reload dashboard content
+        location.reload();
+    }
+  </script>
+  </section>
+{% endblock %}

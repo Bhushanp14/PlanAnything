@@ -14,8 +14,9 @@
         }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen">
-    <nav class="bg-white shadow-sm border-b">
+<body class="min-h-screen bg-gradient-to-b from-blue-100 to-white-100">
+
+    <nav class="bg-transparent backdrop-blur-sm border-b border-white/20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                 <div class="flex items-center">
@@ -47,12 +48,13 @@
         </div>
     {% endif %}
 
-    <main>
+    <main >
         {% block content %}
         {% endblock %}
     </main>
 
     {% block extra_js %}
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
     {% endblock %}
 </body>
 </html>

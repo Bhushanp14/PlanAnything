@@ -9,13 +9,15 @@ from django.utils import timezone
 from datetime import datetime, timedelta
 import calendar
 import json
+from django.urls import reverse
+from django.http import HttpResponse
 
 from .models import Plan, Task
 from .forms import PlanForm, TaskForm
 
 def register_view(request):
     if request.user.is_authenticated:
-        return redirect('dashboard')
+        return redirect('landing_page')
     
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
@@ -23,7 +25,7 @@ def register_view(request):
             user = form.save()
             login(request, user)
             messages.success(request, 'Account created successfully!')
-            return redirect('dashboard')
+            return redirect('landing_page')
     else:
         form = UserCreationForm()
     
@@ -31,7 +33,7 @@ def register_view(request):
 
 def login_view(request):
     if request.user.is_authenticated:
-        return redirect('dashboard')
+        return redirect('landing_page')
     
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
@@ -41,7 +43,7 @@ def login_view(request):
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
-                return redirect('dashboard')
+                return redirect('landing_page')
     else:
         form = AuthenticationForm()
     
@@ -54,30 +56,59 @@ def logout_view(request):
 def about_view(request):
     return render(request, 'planner/about.html')
 
+def landing_page(request):
+    """Public landing page — dynamically changes based on user state."""
+    if request.user.is_authenticated:
+        plans = Plan.objects.filter(user=request.user)
+        
+        # If user has existing plans → Go directly to dashboard
+        if plans.exists():
+            return redirect('dashboard')
+        
+        # If user has no plans → Show landing page without login/signup buttons
+        context = {
+            'user_has_no_plans': True,
+            'plans': [],
+        }
+        return render(request, 'planner/landing_page.html', context)
+    
+    # If not logged in → Show public landing with login/signup buttons
+    return render(request, 'planner/landing_page.html', {'user_has_no_plans': False})
+
+
 @login_required
 def dashboard_view(request):
+    """Main dashboard for logged-in users with plans."""
     plans = Plan.objects.filter(user=request.user)
+    
+    # If no plans yet → redirect to landing page (which will show no-plan view)
+    if not plans.exists():
+        return redirect('landing_page')
+    
     context = {
         'plans': plans,
-        'has_plans': plans.exists()
+        'has_plans': True
     }
     return render(request, 'planner/dashboard.html', context)
 
 @login_required
 def plan_create(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         form = PlanForm(request.POST)
         if form.is_valid():
             plan = form.save(commit=False)
             plan.user = request.user
             plan.save()
-            messages.success(request, 'Plan created successfully!')
-            return redirect('plan_detail', plan_id=plan.id)
+
+            if request.headers.get('HX-Request'):
+                return HttpResponse('<script>closeModalAndReload();</script>')
+            return redirect('dashboard')
     else:
         form = PlanForm()
-    
-    return render(request, 'planner/plan_form.html', {'form': form, 'is_edit': False})
 
+    # If HTMX request, render partial only
+    template = 'planner/partials/plan_form_partial.html' if request.headers.get('HX-Request') else 'planner/plan_form.html'
+    return render(request, template, {'form': form})
 @login_required
 def plan_detail(request, plan_id):
     plan = get_object_or_404(Plan, id=plan_id, user=request.user)
@@ -93,11 +124,10 @@ def plan_detail(request, plan_id):
     
     tasks_by_date = {}
     for task in plan.tasks.all():
+        # ensure consistent string key (YYYY-MM-DD)
         date_key = task.task_date.strftime('%Y-%m-%d')
-        if date_key not in tasks_by_date:
-            tasks_by_date[date_key] = []
-        tasks_by_date[date_key].append(task)
-    
+        tasks_by_date.setdefault(date_key, []).append(task)
+        
     context = {
         'plan': plan,
         'calendar': cal,

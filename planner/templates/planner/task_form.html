@@ -9,7 +9,7 @@
             {% if is_edit %}Edit Task{% else %}Create New Task{% endif %}
         </h2>
         
-        <form method="post" enctype="multipart/form-data" class="space-y-6">
+        <form method="post" action="{% if is_edit %}{% url 'task_edit' task.id %}{% else %}{% url 'task_create' plan.id %}{% endif %}" enctype="multipart/form-data" class="space-y-6">
             {% csrf_token %}
             
             <div>
@@ -27,7 +27,7 @@
                     <p class="mt-1 text-sm text-red-600">{{ form.description.errors.0 }}</p>
                 {% endif %}
             </div>
-
+            
             <div>
                 <label for="{{ form.task_date.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Task Date *</label>
                 {{ form.task_date }}
