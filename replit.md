@@ -163,7 +163,7 @@ The application is configured for deployment with:
 - Fixed calendar navigation query parameters
 - Added deployment configuration with Gunicorn
 - **AI Chatbot Integration (October 15, 2025)**:
-  - Integrated OpenAI GPT-5 for AI-powered plan creation
+  - Integrated Google Gemini 2.5 Flash for AI-powered plan creation
   - Created chatbot UI with real-time messaging
   - Implemented conversation history storage
   - Added plan proposal system with JSON parsing
@@ -201,7 +201,7 @@ The application is configured for deployment with:
 - Redirects off-topic requests to plan creation
 
 ### Technical Implementation
-- **Model**: OpenAI GPT-5
+- **Model**: Google Gemini 2.5 Flash
 - **Database Models**: ChatConversation, ChatMessage, ProposedPlan
 - **System Prompt**: Strictly enforces plan-creation-only behavior
 - **Plan Parsing**: JSON format extraction from AI responses

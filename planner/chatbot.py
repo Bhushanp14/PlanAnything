@@ -1,11 +1,12 @@
 import os
 import json
 from datetime import datetime, timedelta
-from openai import OpenAI
+from google import genai
+from google.genai import types
 from django.utils import timezone
 
-OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
-client = OpenAI(api_key=OPENAI_API_KEY)
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
+client = genai.Client(api_key=GEMINI_API_KEY)
 
 SYSTEM_PROMPT = """You are PlanAnything Assistant, a helpful AI that ONLY helps users create new plans and itineraries for trips, workouts, or any other activities.
 
@@ -48,19 +49,27 @@ Before sending the JSON, ask if the user wants any changes. Only send the JSON f
 
 def chat_with_assistant(messages):
     """
-    Send messages to OpenAI and get a response.
+    Send messages to Gemini and get a response.
     messages should be a list of dicts with 'role' and 'content' keys.
     """
     try:
-        full_messages = [{"role": "system", "content": SYSTEM_PROMPT}] + messages
+        contents = []
+        for msg in messages:
+            role = "user" if msg['role'] == 'user' else "model"
+            contents.append(types.Content(role=role, parts=[types.Part(text=msg['content'])]))
         
-        response = client.chat.completions.create(
-            model="gpt-4o",
-            messages=full_messages,
-            max_tokens=2048
+        generation_config = types.GenerationConfig(
+            max_output_tokens=2048
         )
         
-        return response.choices[0].message.content
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=contents,
+            system_instruction=SYSTEM_PROMPT,
+            generation_config=generation_config
+        )
+        
+        return response.text or "I'm sorry, I couldn't generate a response."
     except Exception as e:
         return f"I'm sorry, I encountered an error: {str(e)}"
 
