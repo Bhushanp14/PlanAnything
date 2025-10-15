@@ -18,4 +18,9 @@ urlpatterns = [
     path('task/<int:task_id>/edit/', views.task_edit, name='task_edit'),
     path('task/<int:task_id>/delete/', views.task_delete, name='task_delete'),
     path('task/<int:task_id>/toggle/', views.task_toggle_status, name='task_toggle_status'),
+    
+    path('chatbot/', views.chatbot_view, name='chatbot'),
+    path('chatbot/send/', views.chatbot_send_message, name='chatbot_send_message'),
+    path('chatbot/accept/<int:plan_id>/', views.chatbot_accept_plan, name='chatbot_accept_plan'),
+    path('chatbot/new/', views.chatbot_new_conversation, name='chatbot_new_conversation'),
 ]

@@ -25,6 +25,7 @@
                 <div class="flex items-center space-x-4">
                     {% if user.is_authenticated %}
                         <a href="{% url 'dashboard' %}" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
+                        <a href="{% url 'chatbot' %}" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">AI Planner</a>
                         <span class="text-gray-500">|</span>
                         <span class="text-gray-700">{{ user.username }}</span>
                         <a href="{% url 'logout' %}" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 text-sm font-medium">Logout</a>

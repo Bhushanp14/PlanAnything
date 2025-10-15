@@ -162,15 +162,50 @@ The application is configured for deployment with:
 - Fixed security issues (externalized SECRET_KEY, DEBUG, ALLOWED_HOSTS)
 - Fixed calendar navigation query parameters
 - Added deployment configuration with Gunicorn
+- **AI Chatbot Integration (October 15, 2025)**:
+  - Integrated OpenAI GPT-5 for AI-powered plan creation
+  - Created chatbot UI with real-time messaging
+  - Implemented conversation history storage
+  - Added plan proposal system with JSON parsing
+  - Created confirmation flow for accepting AI-generated plans
+  - Restricted chatbot to plan creation only (no editing existing plans)
+  - Added "AI Planner" navigation link
 
 ## User Workflow
 1. Register/Login to account
-2. Create first plan from landing page
-3. View plan calendar
-4. Click on any date to add tasks
-5. Tasks appear color-coded on calendar
-6. Click tasks to edit/delete
-7. Track progress on dashboard
+2. Create first plan from landing page OR use AI Planner chatbot
+3. If using AI Planner:
+   - Click "AI Planner" in navigation
+   - Describe your plan needs (trip, workout, etc.)
+   - AI asks clarifying questions
+   - Review and modify the proposed plan
+   - Accept to create the plan with all tasks
+4. View plan calendar
+5. Click on any date to add tasks
+6. Tasks appear color-coded on calendar
+7. Click tasks to edit/delete
+8. Track progress on dashboard
+
+## AI Chatbot Feature
+### Capabilities
+- Creates new plans/itineraries for trips, workouts, or any activity
+- Asks clarifying questions about duration, preferences, and dates
+- Proposes detailed plans with tasks broken down by date
+- Accepts user feedback and modifies plans iteratively
+- Presents final plan in structured format for creation
+
+### Restrictions
+- ONLY handles new plan creation
+- Does NOT edit existing plans
+- Does NOT respond to unrelated topics
+- Redirects off-topic requests to plan creation
+
+### Technical Implementation
+- **Model**: OpenAI GPT-5
+- **Database Models**: ChatConversation, ChatMessage, ProposedPlan
+- **System Prompt**: Strictly enforces plan-creation-only behavior
+- **Plan Parsing**: JSON format extraction from AI responses
+- **Confirmation Flow**: Users review before creating plans
 
 ## Future Enhancements
 - Weekly calendar view option
@@ -182,3 +217,6 @@ The application is configured for deployment with:
 - Mobile app
 - Recurring tasks
 - Task priorities
+- Multi-language support for chatbot
+- Voice input for chatbot
+- Plan templates from chatbot history
