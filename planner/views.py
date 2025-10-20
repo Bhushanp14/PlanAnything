@@ -81,13 +81,25 @@ def landing_page(request):
 def dashboard_view(request):
     """Main dashboard for logged-in users with plans."""
     plans = Plan.objects.filter(user=request.user)
-    
+    completed_plans= []
+    incomplete_plans= []
+    if plans:
+        for plan in plans:
+            if plan.tasks.count()>0:
+                if plan.get_plan_status() == True:
+                    completed_plans.append(plan)
+                else:
+                    incomplete_plans.append(plan)
+            else:
+                incomplete_plans.append(plan)
     # If no plans yet → redirect to landing page (which will show no-plan view)
     if not plans.exists():
         return redirect('landing_page')
     
     context = {
         'plans': plans,
+        'completed_plans' : completed_plans,
+        'incomplete_plans' : incomplete_plans,
         'has_plans': True
     }
     return render(request, 'planner/dashboard.html', context)
@@ -113,10 +125,20 @@ def plan_create(request):
 @login_required
 def plan_detail(request, plan_id):
     plan = get_object_or_404(Plan, id=plan_id, user=request.user)
-    
-    year = request.GET.get('year', timezone.now().year)
-    month = request.GET.get('month', timezone.now().month)
-    
+    first_task = plan.tasks.first()
+    if first_task:
+        try:
+            if  first_task.task_date != request.GET.get('date', timezone.now().date):
+                year = first_task.task_date.year
+                month = first_task.task_date.month
+                
+            
+        except Exception as e:
+            print(f"I'm sorry, I encountered an error: {str(e)}")
+        
+    else:
+        year = request.GET.get('year', timezone.now().year)
+        month = request.GET.get('month', timezone.now().month)
     year = int(year)
     month = int(month)
     

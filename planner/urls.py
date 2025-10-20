@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-
+from . import api_views
 urlpatterns = [
     path('',views.landing_page, name='landing_page'),
     path('dashboard/', views.dashboard_view, name='dashboard'),
@@ -23,4 +23,6 @@ urlpatterns = [
     path('chatbot/send/', views.chatbot_send_message, name='chatbot_send_message'),
     path('chatbot/accept/<int:plan_id>/', views.chatbot_accept_plan, name='chatbot_accept_plan'),
     path('chatbot/new/', views.chatbot_new_conversation, name='chatbot_new_conversation'),
+
+    path('api/plans/', api_views.get_all_plans, name='get_all_plans'),
 ]

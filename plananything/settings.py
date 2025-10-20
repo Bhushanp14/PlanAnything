@@ -13,6 +13,9 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 import os
 import sys
+from dotenv import load_dotenv
+
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -27,6 +30,8 @@ SECRET_KEY = os.environ.get('SESSION_SECRET', 'django-insecure-development-key-o
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
+# Load environment variables
+load_dotenv()
 # Production security checks
 if not DEBUG:
     # Require SECRET_KEY in production
@@ -59,6 +64,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'planner',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [

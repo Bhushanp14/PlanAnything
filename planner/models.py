@@ -25,7 +25,12 @@ class Plan(models.Model):
             'total': total_tasks,
             'completed': completed_tasks
         }
-
+    def get_plan_status(self):
+        if self.tasks.count()==self.tasks.filter(status='completed').count():
+            plan_status =  True    
+        else:
+            plan_status =  False
+        return plan_status
 class Task(models.Model):
     STATUS_CHOICES = [
         ('pending', 'Pending'),

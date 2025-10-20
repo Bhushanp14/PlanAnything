@@ -58,7 +58,57 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {% for plan in plans %}
+            {% for plan in incomplete_plans %}
+                <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                    <div class="h-2" style="background-color: {{ plan.color }};"></div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">{{ plan.title }}</h3>
+                        <p class="text-gray-600 text-sm mb-4">{{ plan.description|truncatewords:15 }}</p>
+                        
+                        <div class="flex items-center justify-between text-sm text-gray-500 mb-4">
+                            <span>{{ plan.start_date }}</span>
+                            {% if plan.end_date %}
+                                <span>to {{ plan.end_date }}</span>
+                            {% endif %}
+                        </div>
+
+                        {% with stats=plan.get_task_stats %}
+                            <div class="mb-4">
+                                {% if stats.total == 0 %}
+                                    <p class="text-sm text-gray-500">No tasks added yet</p>
+                                {% else %}
+                                    {% with percentage=stats.completed|floatformat:0 %}
+                                    {% if stats.total > 0 %}
+                                        {% widthratio stats.completed stats.total 100 as percent %}
+                                    {% else %}
+                                        {% widthratio 0 1 100 as percent %}
+                                    {% endif %}
+                                    <div class="flex items-center justify-between text-sm">
+                                        <span class="text-gray-600">{{ stats.completed }}/{{ stats.total }} Completed</span>
+                                        <span class="font-medium" style="color: {{ plan.color }};">
+                                            {{ percent }}%
+                                        </span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+                                        <div class="h-2 rounded-full" style="background-color: {{ plan.color }}; width: {{ percent }}%"></div>
+                                    </div>
+                                    {% endwith %}
+                                {% endif %}
+                            </div>
+                        {% endwith %}
+
+                        <a href="{% url 'plan_detail' plan.id %}" class="block w-full text-center bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 font-medium">
+                            View Plan
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="mt-6 mb-6 flex justify-between items-center">
+            <h2 class="text-3xl font-bold text-gray-900">Completed Plans</h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for plan in completed_plans %}
                 <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
                     <div class="h-2" style="background-color: {{ plan.color }};"></div>
                     <div class="p-6">
